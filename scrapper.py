@@ -17,7 +17,7 @@ class Scrapper:
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920x1080")
 
-    chrome_driver = os.getcwd() + "\\chromedriver.exe"
+    chrome_driver = os.path.join(os.getcwd(), "chromedriver.exe")
 
     def __init__(self):
         self.driver = webdriver.Chrome(chrome_options=self.chrome_options, executable_path=self.chrome_driver)
