@@ -25,9 +25,17 @@ class Scrapper:
     def get_live_events(self, sport):
         self.driver.get(self.live_scores_page.format(sport))
 
-        headers = self.driver.find_elements_by_css_selector(css_selector="div.row.row-tall")
-        contents = self.driver.find_elements_by_css_selector(css_selector="div.row-gray.even.live")
+        headers = self.driver.find_elements_by_css_selector(css_selector="[data-type=\"container\"]>div.row.row-tall")
+        contents = self.driver.find_elements_by_css_selector(css_selector="[data-type=\"container\"]>div.row-gray.even.live")
         live_events = []
+
+        event_id = ""
+        home_team = ""
+        away_team = ""
+        home_team_goals = ""
+        away_team_goals = ""
+        score_link = ""
+
         for header, content in zip(headers, contents):
             try:
                 country = header.find_element_by_tag_name(name="strong").text
@@ -45,11 +53,11 @@ class Scrapper:
 
                 event_id = content.get_attribute("data-id")
                 score_link = content.find_element_by_class_name("scorelink").get_attribute("href")
-
-                event = Event(event_id, home_team, away_team, home_team_goals, away_team_goals, score_link)
-                live_events.append(event)
             except Exception:
                 continue
+            finally:
+                event = Event(event_id, home_team, away_team, home_team_goals, away_team_goals, score_link)
+                live_events.append(event)
 
         return live_events
 
@@ -123,7 +131,7 @@ class Scrapper:
 
 if __name__ == "__main__":
     scrapper = Scrapper()
-    print(scrapper.get_international_competition_events("http://www.livescore.com/soccer/champions-league/"))
+   # print(scrapper.get_international_competition_events("http://www.livescore.com/soccer/champions-league/"))
     print(scrapper.get_live_events("football"))
     # print(scrapper.get_live_events("http://www.livescore.com/soccer/sweden/allsvenskan/oerebro-vs-dalkurd-ff/1-2680023/"))
 
