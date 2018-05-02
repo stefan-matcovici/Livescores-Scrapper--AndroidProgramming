@@ -101,11 +101,12 @@ class Scrapper:
 
             away_event = middle.find_element_by_css_selector("span[data-type=\"away-icon\"]").get_attribute("class")
             home_event = middle.find_element_by_css_selector("span[data-type=\"home-icon\"]").get_attribute("class")
-            incident = Incident(home_player, away_player, score, home_event, away_event)
+            incident = Incident(minute, home_player, away_player, score, home_event, away_event)
 
             incidents_list.append(incident)
 
-        return incidents_list
+        # because last incident is empty
+        return incidents_list[:-1]
 
 
     def get_international_competitions(self, sport):

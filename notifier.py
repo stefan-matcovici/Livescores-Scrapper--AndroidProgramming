@@ -2,6 +2,7 @@ from pyfcm import FCMNotification
 import pyrebase
 
 from RepeatedTimer import RepeatedTimer
+from scrapper import Scrapper
 
 config = {
     "apiKey": "AIzaSyAmetdoF4mAKT9FzpjMcK58D2gA7mKgUGw",
@@ -30,4 +31,14 @@ if __name__ == "__main__":
     # result = push_service.notify_topic_subscribers(topic_name="news", message_body=message_body)
     # print(result)
 
-    repeated_timer = RepeatedTimer(1, do_something)
+    scrapper = Scrapper()
+    match_id = "1-2747587"
+    incidents = scrapper.get_event_info(
+        "http://www.livescore.com/soccer/champions-league/semi-finals/real-madrid-vs-bayern-munich/1-2747587/")
+
+    for incident in incidents:
+        db.child(match_id).child(incident.minute).set(incident.__dict__)
+
+    scrapper.close()
+
+    # repeated_timer = RepeatedTimer(1, do_something)
