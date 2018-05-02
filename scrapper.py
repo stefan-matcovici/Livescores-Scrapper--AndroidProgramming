@@ -1,9 +1,11 @@
+import copy
 import os
 import signal
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+from models.Header import Header
 from models.Commentary import Commentary
 from models.Event import Event
 from models.InternationalCompetition import InternationalCompetition
@@ -26,7 +28,8 @@ class Scrapper:
         self.driver.get(self.live_scores_page.format(sport))
 
         headers = self.driver.find_elements_by_css_selector(css_selector="[data-type=\"container\"]>div.row.row-tall")
-        contents = self.driver.find_elements_by_css_selector(css_selector="[data-type=\"container\"]>div.row-gray.even.live")
+        contents = self.driver.find_elements_by_css_selector(
+            css_selector="[data-type=\"container\"]>div.row-gray.even.live")
         live_events = []
 
         event_id = ""
@@ -124,15 +127,62 @@ class Scrapper:
 
         return live_events
 
+    def get_competition_events(self, url):
+        self.driver.get(url)
+        rows = self.driver.find_elements_by_css_selector("div[data-type=\"container\"]>div")
+
+        events = []
+
+        current_header = None
+        for row in rows:
+            data_type = row.get_attribute("data-type")
+            if data_type == "stg":
+                # header
+                try:
+                    left = row.find_element_by_class_name("left")
+                    right = row.find_element_by_class_name("right")
+
+                    links = left.find_elements_by_tag_name("a")
+                    current_header = Header(links[0].text, links[0].get_attribute("href"), links[1].text,
+                                            links[1].get_attribute("href"), right.text)
+                except Exception as e:
+                    # same competition with different date
+                    right = row.find_element_by_class_name("right")
+                    current_header.set_date(right.text)
+            elif data_type == "evt":
+                # event
+                team_names = row.find_elements_by_class_name("name")
+                home_team = team_names[0].text
+                away_team = team_names[1].text
+
+                home_team_goals = row.find_element_by_class_name(name="hom").text
+                away_team_goals = row.find_element_by_class_name(name="awy").text
+
+                event_id = row.get_attribute("data-id")
+                try:
+                    score_link = row.find_element_by_class_name("scorelink").get_attribute("href")
+                except Exception as e:
+                    score_link = ""
+                event = Event(event_id, home_team, away_team, home_team_goals, away_team_goals, score_link,
+                              copy.deepcopy(current_header))
+                events.append(event)
+            else:
+                print("Div inside container with unknown data-type:{}".format(data_type))
+
+        return events
+
     def close(self):
         self.driver.close()
         self.driver.service.process.send_signal(signal.SIGTERM)
         self.driver.quit()
 
+
 if __name__ == "__main__":
     scrapper = Scrapper()
-   # print(scrapper.get_international_competition_events("http://www.livescore.com/soccer/champions-league/"))
-    print(scrapper.get_live_events("football"))
+    print(scrapper.get_competition_events("http://www.livescore.com/soccer/live/"))
+    # print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))
+    # print(scrapper.get_international_competition_events("http://www.livescore.com/soccer/champions-league/"))
+    # print(scrapper.get_competition_events(sport="football"))
     # print(scrapper.get_live_events("http://www.livescore.com/soccer/sweden/allsvenskan/oerebro-vs-dalkurd-ff/1-2680023/"))
 
     scrapper.close()
