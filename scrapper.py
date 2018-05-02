@@ -8,6 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from models.Header import Header
 from models.Commentary import Commentary
 from models.Event import Event
+from models.Incident import Incident
 from models.InternationalCompetition import InternationalCompetition
 
 
@@ -81,6 +82,31 @@ class Scrapper:
             commentaries.append(Commentary(text, minute, event_type))
 
         return commentaries
+
+    def get_event_info(self, details_link):
+        self.driver.get(details_link)
+
+        incidents_list = []
+
+        incidents = self.driver.find_elements_by_css_selector("div[data-type=\"incident\"]")
+        for incident in incidents:
+            minute = incident.find_element_by_class_name("min").text
+            home = incident.find_element_by_css_selector("div[data-type=\"home\"]")
+            middle = incident.find_element_by_css_selector("div[data-type=\"middle\"]")
+            away = incident.find_element_by_css_selector("div[data-type=\"away\"]")
+
+            home_player = home.find_element_by_css_selector("div[data-type=\"player-name\"]").text
+            away_player = away.find_element_by_css_selector("div[data-type=\"player-name\"]").text
+            score = middle.find_element_by_css_selector("span[data-type=\"score\"]").text
+
+            away_event = middle.find_element_by_css_selector("span[data-type=\"away-icon\"]").get_attribute("class")
+            home_event = middle.find_element_by_css_selector("span[data-type=\"home-icon\"]").get_attribute("class")
+            incident = Incident(home_player, away_player, score, home_event, away_event)
+
+            incidents_list.append(incident)
+
+        return incidents_list
+
 
     def get_international_competitions(self, sport):
         self.driver.get(self.international_competitions.format(sport))
@@ -179,7 +205,8 @@ class Scrapper:
 
 if __name__ == "__main__":
     scrapper = Scrapper()
-    print(scrapper.get_competition_events("http://www.livescore.com/soccer/live/"))
+    print(scrapper.get_event_info("http://www.livescore.com/soccer/champions-league/semi-finals/real-madrid-vs-bayern-munich/1-2747587/"))
+    # print(scrapper.get_competition_events("http://www.livescore.com/soccer/live/"))
     # print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))
     # print(scrapper.get_international_competition_events("http://www.livescore.com/soccer/champions-league/"))
     # print(scrapper.get_competition_events(sport="football"))
