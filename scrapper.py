@@ -1,6 +1,7 @@
 import copy
 import os
 import signal
+import platform
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -19,11 +20,14 @@ class Scrapper:
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920x1080")
-    chrome_options.add_argument('--no-sandbox')    
-
-    chrome_driver = os.path.join(os.getcwd(), "chromedriver_linux64", "chromedriver")    
+    chrome_options.add_argument('--no-sandbox')
 
     def __init__(self):
+        is_windows = any(platform.win32_ver())
+        if not is_windows:
+            self.chrome_driver = os.path.join(os.getcwd(), "chromedrivers", "linux_chromedriver")
+        else:
+            self.chrome_driver = os.path.join(os.getcwd(), "chromedrivers", "win_chromedriver.exe")
         self.driver = webdriver.Chrome(chrome_options=self.chrome_options, executable_path=self.chrome_driver)
 
     def get_live_events(self, sport):
@@ -108,7 +112,6 @@ class Scrapper:
 
         # because last incident is empty
         return incidents_list[:-1]
-
 
     def get_international_competitions(self, sport):
         self.driver.get(self.international_competitions.format(sport))
@@ -207,9 +210,9 @@ class Scrapper:
 
 if __name__ == "__main__":
     scrapper = Scrapper()
-    print(scrapper.get_event_info("http://www.livescore.com/soccer/champions-league/semi-finals/real-madrid-vs-bayern-munich/1-2747587/"))
+    # print(scrapper.get_event_info("http://www.livescore.com/soccer/champions-league/semi-finals/real-madrid-vs-bayern-munich/1-2747587/"))
     # print(scrapper.get_competition_events("http://www.livescore.com/soccer/live/"))
-    # print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))
+    print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))
     # print(scrapper.get_international_competition_events("http://www.livescore.com/soccer/champions-league/"))
     # print(scrapper.get_competition_events(sport="football"))
     # print(scrapper.get_live_events("http://www.livescore.com/soccer/sweden/allsvenskan/oerebro-vs-dalkurd-ff/1-2680023/"))
