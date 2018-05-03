@@ -1,6 +1,9 @@
 #!flask/bin/python
 
 from flask import Flask, request, jsonify
+
+from models.Event import Event
+from models.Header import Header
 from scrapper import Scrapper
 
 app = Flask(__name__)
@@ -11,6 +14,16 @@ scrapper = Scrapper()
 @app.route('/<sport>/live_events', methods=['GET'])
 def liveEvents(sport):
     return jsonify([x.to_dict() for x in scrapper.get_live_events(sport)])
+
+
+@app.route('/fake/<sport>/live_events', methods=['GET'])
+def fakeLiveEvents(sport):
+    events = []
+    event1 = Event("id-1-276543", "real madrid", "away team", "1", "0", "link",
+                   Header("La liga", "link", "stage", "stage_link", "date"))
+    event2 = Event("id-2-276543", "real madrid2", "away team2", "2", "0", "link",
+                   Header("La liga2", "link2", "stage2", "stage_link2", "date"))
+    return jsonify([x.to_dict() for x in events])
 
 
 @app.route('/commentaries', methods=['POST'])
