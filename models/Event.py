@@ -18,7 +18,7 @@ class Event:
     def __repr__(self):
         return str(self)
 
-    def __dict__(self):
+    def to_dict(self):
         return {
             "id": self.id,
             "homeTeam": self.homeTeam,
