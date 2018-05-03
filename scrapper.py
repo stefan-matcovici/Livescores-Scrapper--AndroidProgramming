@@ -31,7 +31,7 @@ class Scrapper:
         self.driver = webdriver.Chrome(chrome_options=self.chrome_options, executable_path=self.chrome_driver)
 
     def get_live_events(self, sport):
-        return self.get_international_competition_events("http://www.livescore.com/soccer/live/")
+        return self.get_competition_events("http://www.livescore.com/soccer/live/")
 
     def get_event_commentaries(self, details_link):
         self.driver.get(details_link)
@@ -175,9 +175,9 @@ if __name__ == "__main__":
     scrapper = Scrapper()
     # print(scrapper.get_event_info("http://www.livescore.com/soccer/champions-league/semi-finals/real-madrid-vs-bayern-munich/1-2747587/"))
     # print(scrapper.get_competition_events("http://www.livescore.com/soccer/live/"))
-    print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))
+    # print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))
     # print(scrapper.get_international_competition_events("http://www.livescore.com/soccer/champions-league/"))
-    # print(scrapper.get_competition_events(sport="football"))
+    print(scrapper.get_live_events(sport="football"))
     # print(scrapper.get_live_events("http://www.livescore.com/soccer/sweden/allsvenskan/oerebro-vs-dalkurd-ff/1-2680023/"))
 
     scrapper.close()
