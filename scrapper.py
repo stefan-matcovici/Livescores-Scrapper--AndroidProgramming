@@ -69,7 +69,7 @@ class Scrapper:
 
             away_event = middle.find_element_by_css_selector("span[data-type=\"away-icon\"]").get_attribute("class")
             home_event = middle.find_element_by_css_selector("span[data-type=\"home-icon\"]").get_attribute("class")
-            incident = Incident(minute, home_player, away_player, score, home_event, away_event)
+            incident = Incident(minute, home_player, away_player, score, home_event.split(' ')[-1], away_event.split(' ')[-1])
 
             incidents_list.append(incident)
 
@@ -173,11 +173,14 @@ class Scrapper:
 
 if __name__ == "__main__":
     scrapper = Scrapper()
-    # print(scrapper.get_event_info("http://www.livescore.com/soccer/champions-league/semi-finals/real-madrid-vs-bayern-munich/1-2747587/"))
+    incidents = scrapper.get_event_info("http://www.livescore.com/soccer/finland/veikkausliga/vps-vs-ps-kemi/1-2706760/")
+    for incident in incidents:
+        print(incident.home_event)
+        print(incident.away_event)
     # print(scrapper.get_competition_events("http://www.livescore.com/soccer/live/"))
     # print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))
     # print(scrapper.get_international_competition_events("http://www.livescore.com/soccer/champions-league/"))
-    print(scrapper.get_live_events(sport="football"))
+    # print(scrapper.get_live_events(sport="football"))
     # print(scrapper.get_live_events("http://www.livescore.com/soccer/sweden/allsvenskan/oerebro-vs-dalkurd-ff/1-2680023/"))
 
     scrapper.close()
