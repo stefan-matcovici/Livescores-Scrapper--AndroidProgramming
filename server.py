@@ -10,12 +10,12 @@ scrapper = Scrapper()
 
 @app.route('/<sport>/live_events', methods=['GET'])
 def liveEvents(sport):
-    return jsonify([x.__dict__ for x in scrapper.get_live_events(sport)])
+    return jsonify([x.to_dict() for x in scrapper.get_live_events(sport)])
 
 
 @app.route('/commentaries', methods=['POST'])
 def commentaries():
-    return jsonify([x.__dict__ for x in scrapper.get_event_commentaries(request.json)])
+    return jsonify([x.__dict__ for x in scrapper.get_event_commentaries(request.get_json(force=True)["link"])])
 
 
 @app.route('/<sport>/international_competitions', methods=['GET'])

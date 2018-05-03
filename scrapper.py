@@ -31,44 +31,7 @@ class Scrapper:
         self.driver = webdriver.Chrome(chrome_options=self.chrome_options, executable_path=self.chrome_driver)
 
     def get_live_events(self, sport):
-        self.driver.get(self.live_scores_page.format(sport))
-
-        headers = self.driver.find_elements_by_css_selector(css_selector="[data-type=\"container\"]>div.row.row-tall")
-        contents = self.driver.find_elements_by_css_selector(
-            css_selector="[data-type=\"container\"]>div.row-gray.even.live")
-        live_events = []
-
-        event_id = ""
-        home_team = ""
-        away_team = ""
-        home_team_goals = ""
-        away_team_goals = ""
-        score_link = ""
-
-        for header, content in zip(headers, contents):
-            try:
-                country = header.find_element_by_tag_name(name="strong").text
-                league = header.find_element_by_css_selector(css_selector="a:last-child").text
-
-                date = header.find_element_by_class_name("right").text
-                min = content.find_element_by_class_name(name="min").text
-
-                team_names = content.find_elements_by_class_name("name")
-                home_team = team_names[0].text
-                away_team = team_names[1].text
-
-                home_team_goals = content.find_element_by_class_name(name="hom").text
-                away_team_goals = content.find_element_by_class_name(name="awy").text
-
-                event_id = content.get_attribute("data-id")
-                score_link = content.find_element_by_class_name("scorelink").get_attribute("href")
-            except Exception:
-                continue
-            finally:
-                event = Event(event_id, home_team, away_team, home_team_goals, away_team_goals, score_link)
-                live_events.append(event)
-
-        return live_events
+        return self.get_international_competition_events("http://www.livescore.com/soccer/live/")
 
     def get_event_commentaries(self, details_link):
         self.driver.get(details_link)
