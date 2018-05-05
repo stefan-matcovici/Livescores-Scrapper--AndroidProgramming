@@ -57,8 +57,8 @@ def notify_about_event(event):
                                     message_body = incident.home_player + " from " + event.homeTeam + " has just scored from penalty"
                                 elif type_of_goal == "own":
                                     message_body = incident.home_player + " from " + event.homeTeam + " has just scored an own goal"
-                                else:
-                                    message_body = incident.home_player + " from " + event.homeTeam + " has just scored"
+                            else:
+                                message_body = incident.home_player + " from " + event.homeTeam + " has just scored"
                         if "goal" in incident.away_event:
                             if "-" in incident.away_event:
                                 type_of_goal = incident.away_event.split("-")[1]
@@ -66,9 +66,9 @@ def notify_about_event(event):
                                     message_body = incident.away_player + " from " + event.awayTeam + " has just scored from penalty"
                                 elif type_of_goal == "own":
                                     message_body = incident.away_player + " from " + event.awayTeam + " has just scored an own goal"
-                                else:
-                                    message_body = incident.away_player + " from " + event.awayTeam + " has just scored"
-                    elif "card" in incident.away_event or "goal" in incident.home_event:
+                            else:
+                                message_body = incident.away_player + " from " + event.awayTeam + " has just scored"
+                    elif "card" in incident.away_event or "card" in incident.home_event:
                         message_title = "Someone got booked"
                         if "card" in incident.home_event:
                             message_body = incident.home_player + " from " + event.homeTeam + " was just booked with " + \
@@ -92,4 +92,13 @@ if __name__ == "__main__":
         api_key="AAAAKVHFP8Q:APA91bHUbwf_vT3Pa99DlONXqsEBtIGmiSqbpaX4vwUCkrQdBgwF_yK6Bn6Q2QEOEvQGTg0i-np5yy-rykHVXKnkIxAykUZErs-huNy2VP7IAF0SepoFhSVzafu-QI9BEe8It-bp4boM")
 
     scrapper = Scrapper()
-    repeated_timer = RepeatedTimer(60*10, do_something)
+    live_events = scrapper.get_live_events("football")
+
+    for event in live_events:
+        print(event)
+        if event.scoreLink:
+            notify_about_event(event)
+
+    scrapper.close()
+
+    # repeated_timer = RepeatedTimer(1, do_something)
