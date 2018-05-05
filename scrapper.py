@@ -37,7 +37,10 @@ class Scrapper:
         self.driver.get(details_link)
         commentaries = []
 
-        commentary_button = self.driver.find_element_by_link_text('Commentary')
+        try:
+            commentary_button = self.driver.find_element_by_link_text('Commentary')
+        except Exception as e:
+            return []
         commentary_button.click()
         minutes = self.driver.find_elements_by_class_name("comment-min")
         commentaries_list = self.driver.find_elements_by_class_name("comment")
@@ -69,7 +72,8 @@ class Scrapper:
 
             away_event = middle.find_element_by_css_selector("span[data-type=\"away-icon\"]").get_attribute("class")
             home_event = middle.find_element_by_css_selector("span[data-type=\"home-icon\"]").get_attribute("class")
-            incident = Incident(minute, home_player, away_player, score, home_event.split(' ')[-1], away_event.split(' ')[-1])
+            incident = Incident(minute, home_player, away_player, score, home_event.split(' ')[-1],
+                                away_event.split(' ')[-1])
 
             incidents_list.append(incident)
 
@@ -173,7 +177,8 @@ class Scrapper:
 
 if __name__ == "__main__":
     scrapper = Scrapper()
-    incidents = scrapper.get_event_info("http://www.livescore.com/soccer/finland/veikkausliga/vps-vs-ps-kemi/1-2706760/")
+    incidents = scrapper.get_event_info(
+        "http://www.livescore.com/soccer/finland/veikkausliga/vps-vs-ps-kemi/1-2706760/")
     for incident in incidents:
         print(incident.home_event)
         print(incident.away_event)
