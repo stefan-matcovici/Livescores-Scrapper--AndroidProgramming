@@ -1,6 +1,6 @@
 #!flask/bin/python
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, json
 
 from models.Event import Event
 from models.Header import Header
@@ -30,7 +30,7 @@ def fakeLiveEvents(sport):
 
 @app.route('/commentaries', methods=['POST'])
 def commentaries():
-    return jsonify([x.__dict__ for x in scrapper.get_event_commentaries(request.get_json(force=True)["link"])]) + "\n"
+    return json.dumps([x.__dict__ for x in scrapper.get_event_commentaries(request.get_json(force=True)["link"])])+"\n"
 
 
 @app.route('/<sport>/international_competitions', methods=['GET'])
