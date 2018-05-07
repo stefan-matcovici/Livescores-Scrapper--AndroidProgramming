@@ -34,32 +34,30 @@ def get_competition_events(competition_name):
             print(competition)
 
 
-def add_events_to_competition(competition, ref, competition_id):
-    log.info("{} competition id".format(competition_id))
+def add_events_to_competition(competition, ref):
 
     events = scrapper.get_competition_events(competition.link)
     log.info("{} events to push further".format(len(events)))
 
     if len(events) == 0:
-        ref.child(competition_id).remove()
+        ref.remove()
     else:
-        for event in events:
+        for event in events[:2]:
             log.info("{} vs {}".format(event.homeTeam, event.awayTeam))
             base_ref = copy.deepcopy(ref)
-            event_id = base_ref.child(competition_id).child("events").push(event.to_dict())["name"]
-
-            if not event.scoreLink:
-                log.info("No commentaries")
-            else:
-                commentaries = scrapper.get_event_commentaries(event.scoreLink)
-                log.info("{} commentaries to push further".format(len(commentaries)))
-                if len(commentaries) == 0:
-                    log.info("No commentaries")
-                else:
-                    for commentary in commentaries:
-                        base_ref = copy.deepcopy(ref)
-                        base_ref.child(competition_id).child("events").child(event_id).child("commentaries").push(
-                            commentary.__dict__)
+            base_ref.child("events").push(event.to_dict())
+            # if not event.scoreLink:
+            #     log.info("No commentaries")
+            # else:
+            #     commentaries = scrapper.get_event_commentaries(event.scoreLink)
+            #     log.info("{} commentaries to push further".format(len(commentaries)))
+            #     if len(commentaries) == 0:
+            #         log.info("No commentaries")
+            #     else:
+            #         for commentary in commentaries:
+            #             base_ref = copy.deepcopy(ref)
+            #             base_ref.child(competition_id).child("events").child(event_id).child("commentaries").push(
+            #                 commentary.__dict__)
 
 
 def add_competitions(sport):
@@ -72,7 +70,16 @@ def add_competitions(sport):
     for competition in competitions:
         log.info("Starting pushing " + competition.name)
         competition_id = db.child("competitions").child(sport).push(competition.__dict__)
-        add_events_to_competition(competition, db.child("competitions").child(sport), competition_id["name"])
+
+        events = scrapper.get_competition_events(competition.link)
+        log.info("{} events to push further".format(len(events)))
+
+        if len(events) == 0:
+            db.child("competitions").child(sport).child(competition_id["name"]).remove()
+        else:
+            for event in events:
+                log.info("{} vs {}".format(event.homeTeam, event.awayTeam))
+                db.child("competitions").child(sport).child(competition_id["name"]).child("events").push(event.to_dict())
 
 
 if __name__ == "__main__":

@@ -16,6 +16,7 @@ from models.InternationalCompetition import InternationalCompetition
 class Scrapper:
     live_scores_page = 'http://www.livescore.com/{}/live/'
     international_competitions = "http://www.livescore.com/{}/"
+    footbal_competitions = "http://www.livescore.com/"
 
     chrome_options = Options()
     chrome_options.add_argument("--headless")
@@ -81,7 +82,10 @@ class Scrapper:
         return incidents_list[:-1]
 
     def get_international_competitions(self, sport):
-        self.driver.get(self.international_competitions.format(sport))
+        if sport == "soccer":
+            self.driver.get(self.footbal_competitions)
+        else:
+            self.driver.get(self.international_competitions.format(sport))
 
         events = []
         tab = self.driver.find_elements_by_css_selector(".buttons.btn-light")[1]
@@ -177,15 +181,21 @@ class Scrapper:
 
 if __name__ == "__main__":
     scrapper = Scrapper()
-    incidents = scrapper.get_event_info(
-        "http://www.livescore.com/soccer/finland/veikkausliga/vps-vs-ps-kemi/1-2706760/")
-    for incident in incidents:
-        print(incident.home_event)
-        print(incident.away_event)
-    # print(scrapper.get_competition_events("http://www.livescore.com/soccer/live/"))
+    # incidents = scrapper.get_event_info(
+    #     "http://www.livescore.com/soccer/finland/veikkausliga/vps-vs-ps-kemi/1-2706760/")
+    # for incident in incidents:
+    #     print(incident.home_event)
+    #     print(incident.away_event)
+    try:
+        commentaries = scrapper.get_event_commentaries(
+            "http://www.livescore.com/soccer/champions-league/eight-finals/barcelona-vs-chelsea/1-2680955/")
+        for commentary in commentaries:
+            print(commentary.text)
     # print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))
     # print(scrapper.get_international_competition_events("http://www.livescore.com/soccer/champions-league/"))
     # print(scrapper.get_live_events(sport="football"))
     # print(scrapper.get_live_events("http://www.livescore.com/soccer/sweden/allsvenskan/oerebro-vs-dalkurd-ff/1-2680023/"))
-
-    scrapper.close()
+    except Exception as e:
+        print(e)
+    finally:
+        scrapper.close()

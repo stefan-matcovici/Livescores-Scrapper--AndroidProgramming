@@ -1,9 +1,9 @@
 class Header:
     def __init__(self, competition, competition_link, stage, stage_link, date):
         self.competition = competition
-        self.competition_link = competition_link
+        self.competitionLink = competition_link
         self.stage = stage
-        self.stage_link = stage_link
+        self.stageLink = stage_link
         self.date = date
 
     def set_date(self, date):
