@@ -188,7 +188,7 @@ if __name__ == "__main__":
     #     print(incident.away_event)
     try:
         commentaries = scrapper.get_event_commentaries(
-            "http://www.livescore.com/soccer/champions-league/eight-finals/barcelona-vs-chelsea/1-2680955/")
+            "http://www.livescore.com/soccer/champions-league/semi-finals/real-madrid-vs-bayern-munich/1-2747587/")
         for commentary in commentaries:
             print(commentary.text)
     # print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))

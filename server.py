@@ -19,10 +19,12 @@ def liveEvents(sport):
 @app.route('/fake/<sport>/live_events', methods=['GET'])
 def fakeLiveEvents(sport):
     events = []
-    event1 = Event("id-1-276543", "real madrid", "away team", "1", "0", "link",
+    event1 = Event("id-1-2747587", "real madrid", "away team", "1", "0", "link",
                    Header("La liga", "link", "stage", "stage_link", "date"))
     event2 = Event("id-2-276543", "real madrid2", "away team2", "2", "0", "link",
                    Header("La liga2", "link2", "stage2", "stage_link2", "date"))
+    events.append(event1)
+    events.append(event2)
     return jsonify([x.to_dict() for x in events])
 
 
@@ -47,5 +49,5 @@ def stop(sport):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    # app.run(host="0.0.0.0", port=80)
+    # app.run(debug=True)
+    app.run(host="0.0.0.0", port=80)
