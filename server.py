@@ -28,7 +28,7 @@ def fakeLiveEvents(sport):
 
 @app.route('/commentaries', methods=['POST'])
 def commentaries():
-    return jsonify([x.__dict__ for x in scrapper.get_event_commentaries(request.get_json(force=True)["link"])])
+    return jsonify([x.__dict__ for x in scrapper.get_event_commentaries(request.get_json(force=True)["link"])]) + "\n"
 
 
 @app.route('/<sport>/international_competitions', methods=['GET'])
