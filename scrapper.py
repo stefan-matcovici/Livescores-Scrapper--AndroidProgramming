@@ -157,6 +157,8 @@ class Scrapper:
                 home_team = team_names[0].text
                 away_team = team_names[1].text
 
+                minute = row.find_element_by_class_name("min").text
+
                 home_team_goals = row.find_element_by_class_name(name="hom").text
                 away_team_goals = row.find_element_by_class_name(name="awy").text
 
@@ -166,7 +168,7 @@ class Scrapper:
                 except Exception as e:
                     score_link = ""
                 event = Event(event_id, home_team, away_team, home_team_goals, away_team_goals, score_link,
-                              copy.deepcopy(current_header))
+                              copy.deepcopy(current_header), minute)
                 events.append(event)
             else:
                 print("Div inside container with unknown data-type:{}".format(data_type))

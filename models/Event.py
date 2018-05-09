@@ -3,7 +3,7 @@ import re
 
 
 class Event:
-    def __init__(self, id, homeTeam, awayTeam, homeScore, awayScore, score_link, header):
+    def __init__(self, id, homeTeam, awayTeam, homeScore, awayScore, score_link, header, minute):
         self.id = id[id.index('-') + 1:]
         self.homeTeam = homeTeam
         self.awayTeam = awayTeam
@@ -11,6 +11,7 @@ class Event:
         self.awayScore = awayScore
         self.scoreLink = score_link
         self.header = header
+        self.minute = minute
 
     def __str__(self):
         return str(self.__dict__)
@@ -26,5 +27,6 @@ class Event:
             "homeScore": self.homeScore,
             "awayScore": self.awayScore,
             "scoreLink": self.scoreLink,
+            "minute": self.minute,
             "header": self.header.__dict__
         }

@@ -1,6 +1,6 @@
 #!flask/bin/python
 
-from flask import Flask, request, jsonify, json
+from flask import Flask, request, jsonify, json, make_response
 
 from models.Event import Event
 from models.Header import Header
@@ -30,7 +30,10 @@ def fakeLiveEvents(sport):
 
 @app.route('/commentaries', methods=['POST'])
 def commentaries():
-    return json.dumps([x.__dict__ for x in scrapper.get_event_commentaries(request.get_json(force=True)["link"])])+"\n"
+    ressponse_as_string = json.dumps([x.__dict__ for x in scrapper.get_event_commentaries(request.get_json(force=True)["link"])])+"\n"
+    response = make_response(ressponse_as_string)
+    response.headers['content-length'] = len(ressponse_as_string) + 1
+    return response
 
 
 @app.route('/<sport>/international_competitions', methods=['GET'])
@@ -49,5 +52,5 @@ def stop(sport):
 
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    app.run(host="0.0.0.0", port=80)
+    app.run(debug=True)
+    # app.run(host="0.0.0.0", port=80)
