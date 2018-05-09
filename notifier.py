@@ -15,7 +15,8 @@ config = {
 
 images = {
     "goal": "https://firebasestorage.googleapis.com/v0/b/tppa-sport-scores.appspot.com/o/football.png?alt=media&token=1ceb91e2-04fb-401d-a9e4-5dcbb20b50c2",
-    "yellowcard": "https://firebasestorage.googleapis.com/v0/b/tppa-sport-scores.appspot.com/o/cards.png?alt=media&token=b23cb14e-b3d3-48d8-bc40-ac6a0f9030e9"
+    "yellowcard": "https://firebasestorage.googleapis.com/v0/b/tppa-sport-scores.appspot.com/o/cards.png?alt=media&token=b23cb14e-b3d3-48d8-bc40-ac6a0f9030e9",
+    "redcard": "https://firebasestorage.googleapis.com/v0/b/tppa-sport-scores.appspot.com/o/cards.png?alt=media&token=b23cb14e-b3d3-48d8-bc40-ac6a0f9030e9"
 }
 
 firebase = pyrebase.initialize_app(config)
@@ -49,7 +50,7 @@ def notify_about_event(event):
                 incidents_to_push = list(filter(lambda incident: int(incident.minute[:-1]) > int(minute), incidents))
                 for incident in incidents_to_push:
                     if "goal" in incident.away_event or "goal" in incident.home_event:
-                        message_title = incident.minute + "' " + event.homeTeam + " " + event.homeTeam + " : " + event.awayScore + " " + event.awayTeam
+                        message_title = incident.minute + "' " + event.homeTeam + " " + event.homeScore + " : " + event.awayScore + " " + event.awayTeam
                         if "goal" in incident.home_event:
                             if "-" in incident.home_event:
                                 type_of_goal = incident.home_event.split("-")[1]

@@ -32,7 +32,7 @@ class Scrapper:
         self.driver = webdriver.Chrome(chrome_options=self.chrome_options, executable_path=self.chrome_driver)
 
     def get_live_events(self, sport):
-        return self.get_competition_events("http://www.livescore.com/soccer/live/")
+        return self.get_competition_events("http://www.livescore.com/" + sport + "/live")
 
     def get_event_commentaries(self, details_link):
         self.driver.get(details_link)
