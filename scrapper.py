@@ -38,6 +38,13 @@ class Scrapper:
         "tennis": "sco2"
     }
 
+    competition_indexes = {
+        "soccer": {"start": 0, "end": 1},
+        "football": {"start": 0, "end": 1},
+        "basketball": {"start": 0, "end": 1},
+        "tennis": {"start": 0, "end": 3},
+    }
+
     def __init__(self):
         is_windows = any(platform.win32_ver())
         if not is_windows:
@@ -105,7 +112,7 @@ class Scrapper:
         events = []
         tabs = self.driver.find_elements_by_css_selector("ul[data-type=\"menu\"]")
 
-        for tab in tabs:
+        for tab in tabs[self.competition_indexes[sport]["start"]:self.competition_indexes[sport]["end"]]:
             for child in tab.find_elements_by_tag_name("a"):
                 link = child.get_attribute("href")
                 name = child.text
@@ -175,7 +182,7 @@ class Scrapper:
 
                 minute = row.find_element_by_css_selector(self.minute_selector[sport]).text
 
-                if sport != "football":
+                if sport != "football" and sport != "soccer":
                     scores = row.find_elements_by_class_name(self.score_selector[sport])
                     home_team_goals = scores[0].text
                     away_team_goals = scores[1].text

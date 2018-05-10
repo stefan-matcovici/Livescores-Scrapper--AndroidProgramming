@@ -62,7 +62,7 @@ def add_events_to_competition(competition, ref):
 
 def add_competitions(sport):
     # clear
-    db.child("competitions").remove()
+    db.child("competitions").child(sport).remove()
 
     # update
     competitions = scrapper.get_international_competitions(sport)
@@ -85,6 +85,8 @@ def add_competitions(sport):
 if __name__ == "__main__":
     try:
         add_competitions("soccer")
+        # add_competitions("basketball")
+        # add_competitions("tennis")
     except Exception as e:
         print(e)
     finally:
