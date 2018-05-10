@@ -2,6 +2,7 @@ import copy
 import os
 import signal
 import platform
+import traceback
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -22,6 +23,20 @@ class Scrapper:
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--window-size=1920x1080")
     chrome_options.add_argument('--no-sandbox')
+
+    name_selector = {"soccer": "",
+                     "football": "",
+                     "basketball": "bas-",
+                     "tennis": "ten-"}
+    minute_selector = {"soccer": ".min",
+                       "football": ".min",
+                       "basketball": "div[data-type=\"min\"]",
+                       "tennis": "div[data-type=\"min\"]"}
+
+    score_selector = {
+        "basketball": "sco3",
+        "tennis": "sco2"
+    }
 
     def __init__(self):
         is_windows = any(platform.win32_ver())
@@ -88,13 +103,14 @@ class Scrapper:
             self.driver.get(self.international_competitions.format(sport))
 
         events = []
-        tab = self.driver.find_elements_by_css_selector(".buttons.btn-light")[1]
+        tabs = self.driver.find_elements_by_css_selector("ul[data-type=\"menu\"]")
 
-        for child in tab.find_elements_by_tag_name("a"):
-            link = child.get_attribute("href")
-            name = child.text
+        for tab in tabs:
+            for child in tab.find_elements_by_tag_name("a"):
+                link = child.get_attribute("href")
+                name = child.text
 
-            events.append(InternationalCompetition(name, link))
+                events.append(InternationalCompetition(name, link))
 
         return events
 
@@ -132,7 +148,7 @@ class Scrapper:
     def get_competition_events(self, url):
         self.driver.get(url)
         rows = self.driver.find_elements_by_css_selector("div[data-type=\"container\"]>div")
-
+        sport = url.split("/")[3]
         events = []
 
         current_header = None
@@ -153,14 +169,19 @@ class Scrapper:
                     current_header.set_date(right.text)
             elif data_type == "evt":
                 # event
-                team_names = row.find_elements_by_class_name("name")
+                team_names = row.find_elements_by_class_name(self.name_selector[sport] + "ply")
                 home_team = team_names[0].text
                 away_team = team_names[1].text
 
-                minute = row.find_element_by_class_name("min").text
+                minute = row.find_element_by_css_selector(self.minute_selector[sport]).text
 
-                home_team_goals = row.find_element_by_class_name(name="hom").text
-                away_team_goals = row.find_element_by_class_name(name="awy").text
+                if sport != "football":
+                    scores = row.find_elements_by_class_name(self.score_selector[sport])
+                    home_team_goals = scores[0].text
+                    away_team_goals = scores[1].text
+                else:
+                    home_team_goals = row.find_element_by_class_name(name="hom").text
+                    away_team_goals = row.find_element_by_class_name(name="awy").text
 
                 event_id = row.get_attribute("data-id")
                 try:
@@ -189,15 +210,23 @@ if __name__ == "__main__":
     #     print(incident.home_event)
     #     print(incident.away_event)
     try:
-        commentaries = scrapper.get_event_commentaries(
-            "http://www.livescore.com/soccer/champions-league/semi-finals/real-madrid-vs-bayern-munich/1-2747587/")
-        for commentary in commentaries:
-            print(commentary.text)
+        # commentaries = scrapper.get_event_commentaries(
+        #     "http://www.livescore.com/soccer/champions-league/semi-finals/real-madrid-vs-bayern-munich/1-2747587/")
+        # for commentary in commentaries:
+        #     print(commentary.text)
+        print(scrapper.get_international_competitions("tennis"))
+        print(scrapper.get_international_competitions("basketball"))
+        print(scrapper.get_international_competitions("football"))
+        # print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))
+        # print(scrapper.get_competition_events("http://www.livescore.com/basketball/nba/"))
+        # print(scrapper.get_competition_events("http://www.livescore.com/tennis/atp-1000-masters/"))
+        # print(scrapper.get_live_events(sport="tennis"))
     # print(scrapper.get_competition_events("http://www.livescore.com/soccer/champions-league/"))
     # print(scrapper.get_international_competition_events("http://www.livescore.com/soccer/champions-league/"))
     # print(scrapper.get_live_events(sport="football"))
     # print(scrapper.get_live_events("http://www.livescore.com/soccer/sweden/allsvenskan/oerebro-vs-dalkurd-ff/1-2680023/"))
     except Exception as e:
         print(e)
+        traceback.print_exc()
     finally:
         scrapper.close()
